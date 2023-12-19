@@ -4,7 +4,7 @@ public class State {
     
     Stack<Integer> stack = new Stack<Integer>();
 
-    byte[] memory = new byte[40];
+    byte[] memory = new byte[2048];
 
     public Stack<Integer> getStack() {
         return this.stack;

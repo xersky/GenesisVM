@@ -113,8 +113,49 @@ public class VirtualMachine {
                         stack.getStack().insertElementAt(stack.getStack().pop(), stack.getStack().size() - indexToSwap);
                         stack.getStack().remove(indexToSwap);
                         stack.getStack().push(itemToSwap);
-                        
+
                         i += 2;
+                        break;
+
+                    case GT:
+                        calc(stack, (args) -> args[0] > args[1] ? 1 : 0);
+                        break;
+
+                    case LT:
+                        calc(stack, (args) -> args[0] < args[1] ? 1 : 0);
+                        break;
+
+                    case EQ:
+                        calc(stack, (args) -> args[0] == args[1] ? 1 : 0);
+                        break;
+
+                    case LHS:
+                        calc(stack, (args) -> args[0] << args[1]);
+                        break;
+
+                    case RHS:
+                        calc(stack, (args) -> args[0] >> args[1]);
+                        break;
+
+                    case NEG:
+                        Integer argToNeg = stack.getStack().pop();
+                        stack.getStack().push(~argToNeg);
+                        /* byte[] byteToNeg = ByteBuffer.allocate(4).putInt(argToNeg).array();
+                        byte[] negdByte = new byte[4];
+                        for(int j = 3, k = 0; j >= 0; negdByte[k++] = byteToNeg[j--]);
+                        stack.getStack().push(ByteBuffer.wrap(negdByte).getInt()); */
+                        break;
+                    
+                    case AND:
+                        calc(stack, (args) -> args[0] & args[1]);
+                        break;
+
+                    case OR:
+                        calc(stack, (args) -> args[0] | args[1]);
+                        break;
+
+                    case XOR:
+                        calc(stack, (args) -> args[0] ^ args[1]);
                         break;
                 }
             } 

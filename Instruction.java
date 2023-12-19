@@ -15,7 +15,16 @@ public enum Instruction {
     LOAD(0x0C),
     STORE(0x0D),
     DUP(0x0E),
-    SWAP(0x0F);
+    SWAP(0x0F),
+    GT(0x10),
+    LT(0x11),
+    EQ(0x12),
+    LHS(0x13),
+    RHS(0x14),
+    NEG(0x15),
+    AND(0x16),
+    OR(0x17),
+    XOR(0x18);
 
     public int byteValue;
 
@@ -72,6 +81,33 @@ public enum Instruction {
 
             case 0x0F:
                 return SWAP;
+            
+            case 0x10:
+                return GT;
+            
+            case 0x11:
+                return LT;
+
+            case 0x12:
+                return EQ;
+
+            case 0x13:
+                return LHS;
+
+            case 0x14:
+                return RHS;
+
+            case 0x15:
+                return NEG;
+
+            case 0x16:
+                return AND;
+
+            case 0x17:
+                return OR;
+
+            case 0x18:
+                return XOR;
         
             default:
             throw new ExceptionInInitializerError();
