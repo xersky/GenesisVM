@@ -65,7 +65,7 @@ public enum Instruction {
                 return LOAD;
             
             case 0x0D:
-                return STOP;
+                return STORE;
             
             case 0x0E:
                 return DUP;

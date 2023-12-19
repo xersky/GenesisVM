@@ -1,4 +1,5 @@
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -7,6 +8,7 @@ public class VirtualMachine {
     public Optional<Integer> byteInterpreter(byte[] byteChunk) {
 
         State stack = new State();
+        byte[] memory = stack.getMemory();
 
         for(int i = 0; i < byteChunk.length; i++) {
 
@@ -22,7 +24,6 @@ public class VirtualMachine {
 
                         stack.getStack().push(argToPush);
                         i += 4;
-
                         break;
 
                     case POP:
@@ -62,23 +63,38 @@ public class VirtualMachine {
                     case JUMP:
                         Integer argToJump = byteChunkMerger(byteChunk, i, 2);
 
+                        System.out.println(" " + argToJump);
+
                         i += 2 + argToJump;
-                        
                         break;
 
                     case CJUMP:
                         Integer conditionInteger = stack.getStack().pop() != 0 ?  1 : 0;
-
                         Integer argToCJump = byteChunkMerger(byteChunk, i, 2);
 
-                        i += 2 + argToCJump * conditionInteger;
+                        System.out.println(" " + argToCJump);
 
+                        i += 2 + argToCJump * conditionInteger;
                         break;
 
                     case LOAD:
+                        Integer indexLoader = byteChunkMerger(byteChunk, i, 2);
+                        Integer argToLoad = byteChunkMerger(memory, indexLoader - 1, 4);
+
+                        stack.getStack().push(argToLoad);
+
+                        i += 2;
                         break;
 
                     case STORE:
+                        Integer indexStore = byteChunkMerger(byteChunk, i, 2);
+                        Integer argToStore = stack.getStack().pop();
+
+                        byte[] byteToStore = ByteBuffer.allocate(4).putInt(argToStore).array();
+
+                        for(int j = indexStore, byteIndexIterator = 0; j < indexStore + 4; memory[j++] = byteToStore[byteIndexIterator++]);
+
+                        i += 2;
                         break;
 
                     case DUP:

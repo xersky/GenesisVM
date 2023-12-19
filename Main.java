@@ -2,7 +2,7 @@ public class Main {
     public static void main(String[] args) {
         VirtualMachine vm = new VirtualMachine();
 
-        byte[] testByteArray = {00,00,00,00,01,00,00,00,00,03,0x0B,00,05,00,00,00,00,04,0x08};
+        byte[] testByteArray = {00,00,00,00,23,0x0D,00,00,0x0C,00,00,0x08};
 
         System.out.println(vm.byteInterpreter(testByteArray));
     }
