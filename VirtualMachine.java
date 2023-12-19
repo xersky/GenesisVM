@@ -18,7 +18,7 @@ public class VirtualMachine {
                 switch (opCode) {
 
                     case PUSH:
-                        Integer argToPush = byteChunkMerger(byteChunk, i, 4);
+                        Integer argToPush = byteChunkMerger(byteChunk, i + 1, 4);
 
                         System.out.println(" " + argToPush);
 
@@ -61,7 +61,7 @@ public class VirtualMachine {
                         return Optional.empty();
 
                     case JUMP:
-                        Integer argToJump = byteChunkMerger(byteChunk, i, 2);
+                        Integer argToJump = byteChunkMerger(byteChunk, i + 1, 2);
 
                         System.out.println(" " + argToJump);
 
@@ -70,7 +70,7 @@ public class VirtualMachine {
 
                     case CJUMP:
                         Integer conditionInteger = stack.getStack().pop() != 0 ?  1 : 0;
-                        Integer argToCJump = byteChunkMerger(byteChunk, i, 2);
+                        Integer argToCJump = byteChunkMerger(byteChunk, i + 1, 2);
 
                         System.out.println(" " + argToCJump);
 
@@ -78,8 +78,8 @@ public class VirtualMachine {
                         break;
 
                     case LOAD:
-                        Integer indexLoader = byteChunkMerger(byteChunk, i, 2);
-                        Integer argToLoad = byteChunkMerger(memory, indexLoader - 1, 4);
+                        Integer indexLoader = byteChunkMerger(byteChunk, i + 1, 2);
+                        Integer argToLoad = byteChunkMerger(memory, indexLoader, 4);
 
                         stack.getStack().push(argToLoad);
 
@@ -87,7 +87,7 @@ public class VirtualMachine {
                         break;
 
                     case STORE:
-                        Integer indexStore = byteChunkMerger(byteChunk, i, 2);
+                        Integer indexStore = byteChunkMerger(byteChunk, i + 1, 2);
                         Integer argToStore = stack.getStack().pop();
 
                         byte[] byteToStore = ByteBuffer.allocate(4).putInt(argToStore).array();
@@ -98,9 +98,23 @@ public class VirtualMachine {
                         break;
 
                     case DUP:
+                        Integer indexToDup = byteChunkMerger(byteChunk, i + 1, 2);
+                        Integer itemToDup = stack.getStack().elementAt(stack.getStack().size() - 1 - indexToDup);
+
+                        stack.getStack().push(itemToDup);
+
+                        i += 2;
                         break;
 
                     case SWAP:
+                        Integer indexToSwap = byteChunkMerger(byteChunk, i + 1, 2);
+                        Integer itemToSwap = stack.getStack().elementAt(stack.getStack().size() - 1 - indexToSwap);
+
+                        stack.getStack().insertElementAt(stack.getStack().pop(), stack.getStack().size() - indexToSwap);
+                        stack.getStack().remove(indexToSwap);
+                        stack.getStack().push(itemToSwap);
+                        
+                        i += 2;
                         break;
                 }
             } 
@@ -118,7 +132,7 @@ public class VirtualMachine {
     }
 
     public Integer byteChunkMerger(byte[] byteChunk, int index, int numberOfBytes) {
-        ByteBuffer arg = ByteBuffer.wrap(byteChunk, index + 1, numberOfBytes);
+        ByteBuffer arg = ByteBuffer.wrap(byteChunk, index, numberOfBytes);
         return numberOfBytes == 2 ? arg.getShort() : arg.getInt();
     }
 }
