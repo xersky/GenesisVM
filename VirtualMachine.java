@@ -74,6 +74,18 @@ public class VirtualMachine {
                         i += 2 + argToCJump * conditionInteger;
 
                         break;
+
+                    case LOAD:
+                        break;
+
+                    case STORE:
+                        break;
+
+                    case DUP:
+                        break;
+
+                    case SWAP:
+                        break;
                 }
             } 
 

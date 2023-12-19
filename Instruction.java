@@ -10,8 +10,12 @@ public enum Instruction {
     MOD(0x07),
     RETURN(0x08),
     STOP(0x09),
-    JUMP(0x10),
-    CJUMP(0x11);
+    JUMP(0x0A),
+    CJUMP(0x0B),
+    LOAD(0x0C),
+    STORE(0x0D),
+    DUP(0x0E),
+    SWAP(0x0F);
 
     public int byteValue;
 
@@ -51,11 +55,23 @@ public enum Instruction {
             case 0x09:
                 return STOP;
 
-            case 0x10:
+            case 0x0A:
                 return JUMP;
             
-            case 0x11:
+            case 0x0B:
                 return CJUMP;
+            
+            case 0x0C:
+                return LOAD;
+            
+            case 0x0D:
+                return STOP;
+            
+            case 0x0E:
+                return DUP;
+
+            case 0x0F:
+                return SWAP;
         
             default:
             throw new ExceptionInInitializerError();
