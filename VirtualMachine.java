@@ -69,7 +69,7 @@ public class VirtualMachine {
                         break;
 
                     case CJUMP:
-                        Integer conditionInteger = stack.getStack().pop() != 0 ?  1 : 0;
+                        Integer conditionInteger = stack.getStack().pop() != 0 ?  0 : 1;
                         Integer argToCJump = byteChunkMerger(byteChunk, i + 1, 2);
 
                         System.out.println(" " + argToCJump);
@@ -79,21 +79,35 @@ public class VirtualMachine {
 
                     case LOAD:
                         Integer indexLoader = byteChunkMerger(byteChunk, i + 1, 2);
-                        Integer argToLoad = byteChunkMerger(memory, indexLoader, 4);
-
+                        Integer argToLoad = byteChunkMerger(memory, indexLoader * 4, 4);
+                        //need to flip the byte before loading
+                        
+                        System.out.println("LOADED: " + argToLoad);
                         stack.getStack().push(argToLoad);
 
                         i += 2;
                         break;
 
                     case STORE:
+                        System.out.println("memory before store");
+                        for (byte b : memory) {
+                            System.out.print(b + " ");
+                        }
+                        System.out.println();
                         Integer indexStore = byteChunkMerger(byteChunk, i + 1, 2);
                         Integer argToStore = stack.getStack().pop();
 
+                        System.out.println("STORED: " + argToStore + " At: " + indexStore);
+
                         byte[] byteToStore = ByteBuffer.allocate(4).putInt(argToStore).array();
 
-                        for(int j = indexStore, byteIndexIterator = 0; j < indexStore + 4; memory[j++] = byteToStore[byteIndexIterator++]);
+                        for(int j = indexStore * 4, byteIndexIterator = 0; j < indexStore * 4 + 4; memory[j++] = byteToStore[byteIndexIterator++]);
 
+                        System.out.println("memory after store");
+                        for (byte b : memory) {
+                            System.out.print(b + " ");
+                        }
+                        System.out.println();
                         i += 2;
                         break;
 
