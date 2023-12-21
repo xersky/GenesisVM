@@ -58,9 +58,11 @@ public class Main {
 
         //vm.byteToMnemonics(summationOfTwentyThreeByteArray);
 
-        List<String> mnemonics = vm.byteToMnemonicsArray(summationOfTwentyThreeByteArray);
+        /* List<String> mnemonics = vm.byteToMnemonicsArray(summationOfTwentyThreeByteArray);
         for (String s : mnemonics) {
             System.out.println(s);
-        }
+        } */
+
+        System.out.println(vm.byteToMnemonicsString(summationOfTwentyThreeByteArray));
     }
 }

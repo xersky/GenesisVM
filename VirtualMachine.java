@@ -311,6 +311,129 @@ public class VirtualMachine {
         return mnemonics;
     }
     
+    public String byteToMnemonicsString(byte[] byteCode) {
+
+        StringBuffer mnemonics = new StringBuffer();
+
+        for(int i = 0; i < byteCode.length; i++) {
+
+            Instruction opCode = Instruction.fromInt(byteCode[i]);
+            
+            mnemonics.append(opCode.toString() + " ");
+
+            switch (opCode) {
+                
+                case PUSH:
+                    mnemonics.append(byteToString(byteCode, i + 1, 4));
+                    i += 4;
+                    break;
+
+                case POP:
+                    mnemonics.append("\n");
+                    break;
+
+                case ADD: 
+                    mnemonics.append("\n");
+                    break;
+
+                case MUL:
+                    mnemonics.append("\n");
+                    break;
+
+                case SUB:
+                    mnemonics.append("\n");
+                    break;
+
+                case DIV:
+                    mnemonics.append("\n");
+                    break;
+
+                case POW:
+                    mnemonics.append("\n");
+                    break;
+
+                case MOD:
+                    mnemonics.append("\n");
+                    break;
+
+                case RETURN:
+                    mnemonics.append("\n");
+                    break;
+
+                case STOP:
+                    break;
+
+                case JUMP:
+                    mnemonics.append(byteToString(byteCode, i + 1, 2));
+                    i += 2;
+                    break;
+
+                case CJUMP:
+                    mnemonics.append(byteToString(byteCode, i + 1, 2));
+                    i += 2;
+                    break;
+
+                case LOAD:
+                    mnemonics.append(byteToString(byteCode, i + 1, 2));
+                    i += 2;
+                    break;
+
+                case STORE:
+                    mnemonics.append(byteToString(byteCode, i + 1, 2));
+                    i += 2;
+                    break;
+
+                case DUP:
+                    mnemonics.append(byteToString(byteCode, i + 1, 2));
+                    i += 2;
+                    break;
+
+                case SWAP:
+                    mnemonics.append(byteToString(byteCode, i + 1, 2));
+                    i += 2;
+                    break;
+
+                case GT:
+                    mnemonics.append("\n");
+                    break;
+
+                case LT:
+                    mnemonics.append("\n");
+                    break;
+
+                case EQ:
+                    mnemonics.append("\n");
+                    break;
+
+                case LHS:
+                    mnemonics.append("\n");
+                    break;
+
+                case RHS:
+                    mnemonics.append("\n");
+                    break;
+
+                case NEG:
+                    mnemonics.append("\n");
+                    break;
+                
+                case AND:
+                    mnemonics.append("\n");
+                    break;
+
+                case OR:
+                    mnemonics.append("\n");
+                    break;
+
+                case XOR:
+                    mnemonics.append("\n");
+                    break;
+            }
+        } 
+
+        return mnemonics.toString().trim();
+    }
+
     public void byteToMnemonics(byte[] byteCode) {
 
         for(int i = 0; i < byteCode.length; i++) {
@@ -439,6 +562,13 @@ public class VirtualMachine {
     }
     
     public void byteDisplayer(byte[] byteCode, int indexOfByteCode, int range) {
-        for(int i = indexOfByteCode; i < indexOfByteCode + range; System.out.format("%02x ", byteCode[i++]));
+        for(int i = indexOfByteCode; i < indexOfByteCode + range; System.out.format("%02X ", byteCode[i++]));
+    } 
+
+    public String byteToString(byte[] byteCode, int indexOfByteCode, int range) {
+        StringBuffer bytes = new StringBuffer();
+        for(int i = indexOfByteCode; i < indexOfByteCode + range; bytes.append(String.format("%02X ", byteCode[i++])));
+        bytes.append("\n");
+        return bytes.toString();
     } 
 }
