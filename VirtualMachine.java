@@ -211,7 +211,7 @@ public class VirtualMachine {
             switch (opCode) {
                 
                 case PUSH:
-                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
+                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 4).toString());
 
                     i += 4;
                     break;
