@@ -1,5 +1,6 @@
 import java.nio.ByteBuffer;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -190,4 +191,254 @@ public class VirtualMachine {
         ByteBuffer arg = ByteBuffer.wrap(byteChunk, index, numberOfBytes);
         return numberOfBytes == 2 ? arg.getShort() : arg.getInt();
     }
+/* 
+    public String[] byteToStringFiller(String[] mnemonics, byte[] byteCode, int indexOfMnemonics, int indexOfByteCode, int range) {
+        for(int i = indexOfByteCode; i < indexOfByteCode + range; mnemonics[indexOfMnemonics++] = Byte.toString(byteCode[i++]));
+        return mnemonics;
+    } */
+    
+
+    public List<String> byteToMnemonicsArray(byte[] byteCode) {
+
+        List<String> mnemonics = new ArrayList<String>();
+
+        for(int i = 0; i < byteCode.length; i++) {
+
+            Instruction opCode = Instruction.fromInt(byteCode[i]);
+            
+            mnemonics.add(opCode.toString());
+
+            switch (opCode) {
+                
+                case PUSH:
+                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
+
+                    i += 4;
+                    break;
+
+                case POP:
+                    break;
+
+                case ADD:              
+                    break;
+
+                case MUL:
+                    break;
+
+                case SUB:
+                    break;
+
+                case DIV:
+                    break;
+
+                case POW:
+                    break;
+
+                case MOD:
+                    break;
+
+                case RETURN:
+                    break;
+
+                case STOP:
+                    break;
+
+                case JUMP:
+                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
+
+                    i += 2;
+                    break;
+
+                case CJUMP:
+                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
+
+                    i += 2;
+                    break;
+
+                case LOAD:
+                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
+
+                    i += 2;
+                    break;
+
+                case STORE:
+                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
+
+                    i += 2;
+                    break;
+
+                case DUP:
+                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
+
+                    i += 2;
+                    break;
+
+                case SWAP:
+                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
+
+                    i += 2;
+                    break;
+
+                case GT:
+                    break;
+
+                case LT:
+                    break;
+
+                case EQ:
+                    break;
+
+                case LHS:
+                    break;
+
+                case RHS:
+                    break;
+
+                case NEG:
+                    break;
+                
+                case AND:
+                    break;
+
+                case OR:
+                    break;
+
+                case XOR:
+                    break;
+            }
+        } 
+
+        return mnemonics;
+    }
+    
+    public void byteToMnemonics(byte[] byteCode) {
+
+        for(int i = 0; i < byteCode.length; i++) {
+
+            Instruction opCode = Instruction.fromInt(byteCode[i]);
+            
+            System.out.print(opCode.toString() + " ");
+
+            switch (opCode) {
+                
+                case PUSH:
+                    byteDisplayer(byteCode, i + 1, 4);
+                    System.out.println();
+                    i += 4;
+                    break;
+
+                case POP:
+                    System.out.println();
+                    break;
+
+                case ADD:  
+                    System.out.println();            
+                    break;
+
+                case MUL:
+                    System.out.println();
+                    break;
+
+                case SUB:
+                    System.out.println();
+                    break;
+
+                case DIV:
+                    System.out.println();
+                    break;
+
+                case POW:
+                    System.out.println();
+                    break;
+
+                case MOD:
+                    System.out.println();
+                    break;
+
+                case RETURN:
+                    System.out.println();
+                    break;
+
+                case STOP:
+                    System.out.println();
+                    break;
+
+                case JUMP:
+                    byteDisplayer(byteCode, i + 1, 2);
+                    System.out.println();
+                    i += 2;
+                    break;
+
+                case CJUMP:
+                    byteDisplayer(byteCode, i + 1, 2);
+                    System.out.println();
+                    i += 2;
+                    break;
+
+                case LOAD:
+                    byteDisplayer(byteCode, i + 1, 2);
+                    System.out.println();
+                    i += 2;
+                    break;
+
+                case STORE:
+                    byteDisplayer(byteCode, i + 1, 2);
+                    System.out.println();
+                    i += 2;
+                    break;
+
+                case DUP:
+                    byteDisplayer(byteCode, i + 1, 2);
+                    System.out.println();
+                    i += 2;
+                    break;
+
+                case SWAP:
+                    byteDisplayer(byteCode, i + 1, 2);
+                    System.out.println();
+                    i += 2;
+                    break;
+
+                case GT:
+                    System.out.println();
+                    break;
+
+                case LT:
+                    System.out.println();
+                    break;
+
+                case EQ:
+                    System.out.println();
+                    break;
+
+                case LHS:
+                    System.out.println();
+                    break;
+
+                case RHS:
+                    System.out.println();
+                    break;
+
+                case NEG:
+                    System.out.println();
+                    break;
+                
+                case AND:
+                    System.out.println();
+                    break;
+
+                case OR:
+                    System.out.println();
+                    break;
+
+                case XOR:
+                    System.out.println();
+                    break;
+            }
+        } 
+    }
+    
+    public void byteDisplayer(byte[] byteCode, int indexOfByteCode, int range) {
+        for(int i = indexOfByteCode; i < indexOfByteCode + range; System.out.format("%02x ", byteCode[i++]));
+    } 
 }

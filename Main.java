@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
         VirtualMachine vm = new VirtualMachine();
@@ -54,6 +56,6 @@ public class Main {
 
         };
 
-        System.out.println(vm.byteInterpreter(summationOfTwentyThreeByteArray));
+        vm.byteToMnemonics(summationOfTwentyThreeByteArray);
     }
 }
