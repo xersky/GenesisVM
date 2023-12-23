@@ -21,8 +21,6 @@ public class VirtualMachine {
                     case PUSH:
                         Integer argToPush = byteChunkMerger(byteChunk, i + 1, 4);
 
-                        System.out.println(" " + argToPush);
-
                         stack.getStack().push(argToPush);
                         i += 4;
                         break;
@@ -64,8 +62,6 @@ public class VirtualMachine {
                     case JUMP:
                         Integer argToJump = byteChunkMerger(byteChunk, i + 1, 2);
 
-                        System.out.println(" " + argToJump);
-
                         i += 2 + argToJump;
                         break;
 
@@ -73,42 +69,25 @@ public class VirtualMachine {
                         Integer conditionInteger = stack.getStack().pop() != 0 ?  0 : 1;
                         Integer argToCJump = byteChunkMerger(byteChunk, i + 1, 2);
 
-                        System.out.println(" " + argToCJump);
-
                         i += 2 + argToCJump * conditionInteger;
                         break;
 
                     case LOAD:
                         Integer indexLoader = byteChunkMerger(byteChunk, i + 1, 2);
                         Integer argToLoad = byteChunkMerger(memory, indexLoader * 4, 4);
-                        //need to flip the byte before loading
-                        
-                        System.out.println("LOADED: " + argToLoad);
-                        stack.getStack().push(argToLoad);
 
+                        stack.getStack().push(argToLoad);
                         i += 2;
                         break;
 
                     case STORE:
-                        System.out.println("memory before store");
-                        for (byte b : memory) {
-                            System.out.print(b + " ");
-                        }
-                        System.out.println();
                         Integer indexStore = byteChunkMerger(byteChunk, i + 1, 2);
                         Integer argToStore = stack.getStack().pop();
-
-                        System.out.println("STORED: " + argToStore + " At: " + indexStore);
 
                         byte[] byteToStore = ByteBuffer.allocate(4).putInt(argToStore).array();
 
                         for(int j = indexStore * 4, byteIndexIterator = 0; j < indexStore * 4 + 4; memory[j++] = byteToStore[byteIndexIterator++]);
 
-                        System.out.println("memory after store");
-                        for (byte b : memory) {
-                            System.out.print(b + " ");
-                        }
-                        System.out.println();
                         i += 2;
                         break;
 
@@ -117,7 +96,6 @@ public class VirtualMachine {
                         Integer itemToDup = stack.getStack().elementAt(stack.getStack().size() - 1 - indexToDup);
 
                         stack.getStack().push(itemToDup);
-
                         i += 2;
                         break;
 
@@ -128,7 +106,6 @@ public class VirtualMachine {
                         stack.getStack().insertElementAt(stack.getStack().pop(), stack.getStack().size() - indexToSwap);
                         stack.getStack().remove(indexToSwap);
                         stack.getStack().push(itemToSwap);
-
                         i += 2;
                         break;
 
@@ -571,4 +548,18 @@ public class VirtualMachine {
         bytes.append("\n");
         return bytes.toString();
     } 
+
+    public byte[] mnemonicsToByteCode(String mnemonics) {
+        String[] mnemonicsArray = mnemonics.split(" ");
+        byte[] byteCode = new byte[mnemonicsArray.length];
+
+        for(int i = 0; i < mnemonicsArray.length; i++) {
+            try { 
+                byteCode[i] = (byte) Instruction.valueOf(mnemonicsArray[i].toUpperCase()).byteValue;
+            } catch (Exception e) {
+                byteCode[i] = (byte) Integer.parseInt(mnemonicsArray[i], 16);
+            } 
+        }
+        return byteCode;
+    }
 }
