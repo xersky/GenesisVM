@@ -55,14 +55,12 @@ public class Main {
             0x08 
 
         };
+        
+        String mnemonics = "PUSH 00 00 00 17 PUSH 00 00 00 01 STORE 00 01 STORE 00 00 PUSH 00 00 00 00 PUSH 00 00 00 01 STORE 00 03 STORE 00 02 LOAD 00 02 LOAD 00 03 ADD STORE 00 02 LOAD 00 03 PUSH 00 00 00 01 ADD STORE 00 03 LOAD 00 03 LOAD 00 00 EQ CJUMP FF E0 LOAD 00 02 LOAD 00 00 ADD RETURN";
 
-        //vm.byteToMnemonics(summationOfTwentyThreeByteArray);
+        byte[] byteCode = vm.mnemonicsToByteCode(mnemonics);
 
-        /* List<String> mnemonics = vm.byteToMnemonicsArray(summationOfTwentyThreeByteArray);
-        for (String s : mnemonics) {
-            System.out.println(s);
-        } */
-
-        System.out.println(vm.byteToMnemonicsString(summationOfTwentyThreeByteArray));
+        System.out.println(vm.byteInterpreter(byteCode));
+        
     }
 }
