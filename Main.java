@@ -88,7 +88,9 @@ public class Main {
 
         String mnemonics = "PUSH 00 00 00 17 PUSH 00 00 00 01 PUSH 00 00 00 01 STORE PUSH 00 00 00 0 STORE fallback: PUSH 00 00 00 00 PUSH 00 00 00 01 PUSH 00 00 00 03 STORE PUSH 00 00 00 02 STORE JUMPDEST PUSH 00 00 00 02 LOAD PUSH 00 00 00 03 LOAD ADD PUSH 00 00 00 02 STORE PUSH 00 00 00 03 LOAD PUSH 00 00 00 01 ADD PUSH 00 00 00 03 STORE PUSH 00 00 00 03 LOAD PUSH 00 00 00 00 LOAD EQ NOT PUSH 00 00 00 2C CJUMP PUSH 00 00 00 02 LOAD PUSH 00 00 00 00 LOAD GOTO fallback ADD RETURN";
 
-        System.out.println(vm.regionMnemonicsToMnemonics(mnemonics));
-        
+        //System.out.println(vm.regionMnemonicsToMnemonics(mnemonics));
+
+        String ifMnemonics = "PUSH 00 00 00 01 PUSH 00 00 00 00 STORE PUSH 00 00 00 00 LOAD PUSH 00 00 00 00 EQ PUSH 00 00 00 28 CJUMP PUSH 00 00 00 17 PUSH 00 00 00 2E JUMP JUMPDEST PUSH 00 00 00 45 JUMPDEST RETURN"; //return 69 if 2 last args of stack are equal and return 23 if not
+        System.out.println(vm.byteInterpreter(vm.mnemonicsToByteCode(ifMnemonics)));
     }
 }
