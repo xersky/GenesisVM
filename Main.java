@@ -80,9 +80,15 @@ public class Main {
 
         //System.out.println(vm.byteInterpreter(summationOfTwentyThreeByteArray));
 
-        byte[] byteCode = {00,00,00,00,01,00,00,00,00,00,0x0D,00,00,00,00,03,00,00,00,00,01,0x0D,00,00,00,00,01,0x0C,0x08};
+        /* byte[] byteCode = {00,00,00,00,01,00,00,00,00,00,0x0D,00,00,00,00,03,00,00,00,00,01,0x0D,00,00,00,00,01,0x0C,0x08};
 
-        System.out.println(vm.byteToMnemonicsString(summationOfTwentyThreeByteArray));
+        System.out.println(vm.byteToMnemonicsString(summationOfTwentyThreeByteArray)); */
+
+
+
+        String mnemonics = "PUSH 00 00 00 17 PUSH 00 00 00 01 PUSH 00 00 00 01 STORE PUSH 00 00 00 0 STORE fallback: PUSH 00 00 00 00 PUSH 00 00 00 01 PUSH 00 00 00 03 STORE PUSH 00 00 00 02 STORE JUMPDEST PUSH 00 00 00 02 LOAD PUSH 00 00 00 03 LOAD ADD PUSH 00 00 00 02 STORE PUSH 00 00 00 03 LOAD PUSH 00 00 00 01 ADD PUSH 00 00 00 03 STORE PUSH 00 00 00 03 LOAD PUSH 00 00 00 00 LOAD EQ NOT PUSH 00 00 00 2C CJUMP PUSH 00 00 00 02 LOAD PUSH 00 00 00 00 LOAD GOTO fallback ADD RETURN";
+
+        System.out.println(vm.regionMnemonicsToMnemonics(mnemonics));
         
     }
 }

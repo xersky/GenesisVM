@@ -1,6 +1,8 @@
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -281,4 +283,34 @@ public class VirtualMachine {
         }
         return byteCode;
     }
+
+        public String regionMnemonicsToMnemonics(String regionMnemonics) {
+            String[] mnemonicsArray = regionMnemonics.split(" ");
+            StringBuilder mnemonics = new StringBuilder();
+            Map<String,Integer> regions = new HashMap<String,Integer>();
+            int appenderCounter = 0;
+
+            for(int i = 0; i < mnemonicsArray.length; i++) {
+                try { 
+                    mnemonics.append("\n" + Instruction.valueOf(mnemonicsArray[i].toUpperCase()));
+                } catch (Exception e) {
+                    if (mnemonicsArray[i].endsWith(":")) {
+                        regions.put(mnemonicsArray[i], appenderCounter);
+                        mnemonics.append("\nJUMPDEST");
+                    } else if(mnemonicsArray[i].equals("GOTO")){
+                        mnemonics.append("\n" + Instruction.PUSH);
+                        byte[] immediants = ByteBuffer.allocate(4).putInt(regions.get(mnemonicsArray[++i] + ":")).array();
+                        for (byte immediant: immediants) {
+                            mnemonics.append(" " + String.format("%02X", immediant));
+                        }
+                        mnemonics.append("\n" + Instruction.JUMP);
+                    } else mnemonics.append(" " + mnemonicsArray[i]);
+
+                } 
+                appenderCounter++;
+            }    
+
+            return mnemonics.toString();
+        }
+    
 }
