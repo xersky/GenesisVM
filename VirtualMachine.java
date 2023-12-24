@@ -11,18 +11,18 @@ public class VirtualMachine {
         State stack = new State();
         byte[] memory = stack.getMemory();
 
-        for(int i = 0; i < byteChunk.length; i++) {
+        for(int pc = 0; pc < byteChunk.length; pc++) {
 
-            Instruction opCode = Instruction.fromInt(byteChunk[i]);
+            Instruction opCode = Instruction.fromInt(byteChunk[pc]);
             System.out.println(opCode);
 
                 switch (opCode) {
 
                     case PUSH:
-                        Integer argToPush = byteChunkMerger(byteChunk, i + 1, 4);
+                        Integer argToPush = byteChunkMerger(byteChunk, pc + 1, 4);
 
                         stack.getStack().push(argToPush);
-                        i += 4;
+                        pc += 4;
                         break;
 
                     case POP:
@@ -60,53 +60,58 @@ public class VirtualMachine {
                         return Optional.empty();
 
                     case JUMP:
-                        Integer argToJump = byteChunkMerger(byteChunk, i + 1, 2);
+                        Integer argToJump = stack.getStack().pop();
 
-                        i += 2 + argToJump;
+                        pc = argToJump;
+                        if(Instruction.fromInt(byteChunk[pc]) != Instruction.JUMPDEST) throw new IllegalAccessError();
                         break;
 
                     case CJUMP:
-                        Integer conditionInteger = stack.getStack().pop() != 0 ?  0 : 1;
-                        Integer argToCJump = byteChunkMerger(byteChunk, i + 1, 2);
+                        Integer argToCJump = stack.getStack().pop();
+                        boolean conditionInteger = stack.getStack().pop() != 0;
 
-                        i += 2 + argToCJump * conditionInteger;
+                        if(conditionInteger) {
+                            pc = argToCJump;
+                            System.out.println(pc);
+                            if(Instruction.fromInt(byteChunk[pc]) != Instruction.JUMPDEST) throw new IllegalAccessError();
+                        }
+                        
+                        break;
+
+                    case JUMPDEST:
                         break;
 
                     case LOAD:
-                        Integer indexLoader = byteChunkMerger(byteChunk, i + 1, 2);
-                        Integer argToLoad = byteChunkMerger(memory, indexLoader * 4, 4);
+                        Integer indexDLoad = stack.getStack().pop();
+                        Integer argToDload = byteChunkMerger(memory, indexDLoad * 4 , 4);
 
-                        stack.getStack().push(argToLoad);
-                        i += 2;
+                        stack.getStack().push(argToDload); 
                         break;
 
                     case STORE:
-                        Integer indexStore = byteChunkMerger(byteChunk, i + 1, 2);
-                        Integer argToStore = stack.getStack().pop();
+                        Integer indexDStore = stack.getStack().pop();
+                        Integer argToDStore = stack.getStack().pop();
 
-                        byte[] byteToStore = ByteBuffer.allocate(4).putInt(argToStore).array();
+                        byte[] byteToDStore = ByteBuffer.allocate(4).putInt(argToDStore).array();
 
-                        for(int j = indexStore * 4, byteIndexIterator = 0; j < indexStore * 4 + 4; memory[j++] = byteToStore[byteIndexIterator++]);
+                        for(int j = indexDStore * 4, byteIndexIterator = 0; j < indexDStore * 4 + 4; memory[j++] = byteToDStore[byteIndexIterator++]);
 
-                        i += 2;
                         break;
 
                     case DUP:
-                        Integer indexToDup = byteChunkMerger(byteChunk, i + 1, 2);
+                        Integer indexToDup = stack.getStack().pop();
                         Integer itemToDup = stack.getStack().elementAt(stack.getStack().size() - 1 - indexToDup);
 
                         stack.getStack().push(itemToDup);
-                        i += 2;
                         break;
 
                     case SWAP:
-                        Integer indexToSwap = byteChunkMerger(byteChunk, i + 1, 2);
+                        Integer indexToSwap = stack.getStack().pop();
                         Integer itemToSwap = stack.getStack().elementAt(stack.getStack().size() - 1 - indexToSwap);
 
                         stack.getStack().insertElementAt(stack.getStack().pop(), stack.getStack().size() - indexToSwap);
                         stack.getStack().remove(indexToSwap);
                         stack.getStack().push(itemToSwap);
-                        i += 2;
                         break;
 
                     case GT:
@@ -119,6 +124,10 @@ public class VirtualMachine {
 
                     case EQ:
                         calc(stack, (args) -> args[0] == args[1] ? 1 : 0);
+                        break;
+                    
+                    case NOT:
+                        stack.getStack().push(stack.getStack().pop() != 0 ? 0 : 1);
                         break;
 
                     case LHS:
@@ -189,98 +198,9 @@ public class VirtualMachine {
                 
                 case PUSH:
                     mnemonics.add(byteChunkMerger(byteCode, i + 1, 4).toString());
-
                     i += 4;
                     break;
-
-                case POP:
-                    break;
-
-                case ADD:              
-                    break;
-
-                case MUL:
-                    break;
-
-                case SUB:
-                    break;
-
-                case DIV:
-                    break;
-
-                case POW:
-                    break;
-
-                case MOD:
-                    break;
-
-                case RETURN:
-                    break;
-
-                case STOP:
-                    break;
-
-                case JUMP:
-                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
-
-                    i += 2;
-                    break;
-
-                case CJUMP:
-                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
-
-                    i += 2;
-                    break;
-
-                case LOAD:
-                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
-
-                    i += 2;
-                    break;
-
-                case STORE:
-                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
-
-                    i += 2;
-                    break;
-
-                case DUP:
-                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
-
-                    i += 2;
-                    break;
-
-                case SWAP:
-                    mnemonics.add(byteChunkMerger(byteCode, i + 1, 2).toString());
-
-                    i += 2;
-                    break;
-
-                case GT:
-                    break;
-
-                case LT:
-                    break;
-
-                case EQ:
-                    break;
-
-                case LHS:
-                    break;
-
-                case RHS:
-                    break;
-
-                case NEG:
-                    break;
-                
-                case AND:
-                    break;
-
-                case OR:
-                    break;
-
-                case XOR:
+                default:
                     break;
             }
         } 
@@ -305,104 +225,7 @@ public class VirtualMachine {
                     i += 4;
                     break;
 
-                case POP:
-                    mnemonics.append("\n");
-                    break;
-
-                case ADD: 
-                    mnemonics.append("\n");
-                    break;
-
-                case MUL:
-                    mnemonics.append("\n");
-                    break;
-
-                case SUB:
-                    mnemonics.append("\n");
-                    break;
-
-                case DIV:
-                    mnemonics.append("\n");
-                    break;
-
-                case POW:
-                    mnemonics.append("\n");
-                    break;
-
-                case MOD:
-                    mnemonics.append("\n");
-                    break;
-
-                case RETURN:
-                    mnemonics.append("\n");
-                    break;
-
-                case STOP:
-                    break;
-
-                case JUMP:
-                    mnemonics.append(byteToString(byteCode, i + 1, 2));
-                    i += 2;
-                    break;
-
-                case CJUMP:
-                    mnemonics.append(byteToString(byteCode, i + 1, 2));
-                    i += 2;
-                    break;
-
-                case LOAD:
-                    mnemonics.append(byteToString(byteCode, i + 1, 2));
-                    i += 2;
-                    break;
-
-                case STORE:
-                    mnemonics.append(byteToString(byteCode, i + 1, 2));
-                    i += 2;
-                    break;
-
-                case DUP:
-                    mnemonics.append(byteToString(byteCode, i + 1, 2));
-                    i += 2;
-                    break;
-
-                case SWAP:
-                    mnemonics.append(byteToString(byteCode, i + 1, 2));
-                    i += 2;
-                    break;
-
-                case GT:
-                    mnemonics.append("\n");
-                    break;
-
-                case LT:
-                    mnemonics.append("\n");
-                    break;
-
-                case EQ:
-                    mnemonics.append("\n");
-                    break;
-
-                case LHS:
-                    mnemonics.append("\n");
-                    break;
-
-                case RHS:
-                    mnemonics.append("\n");
-                    break;
-
-                case NEG:
-                    mnemonics.append("\n");
-                    break;
-                
-                case AND:
-                    mnemonics.append("\n");
-                    break;
-
-                case OR:
-                    mnemonics.append("\n");
-                    break;
-
-                case XOR:
+                default:
                     mnemonics.append("\n");
                     break;
             }
@@ -427,111 +250,7 @@ public class VirtualMachine {
                     i += 4;
                     break;
 
-                case POP:
-                    System.out.println();
-                    break;
-
-                case ADD:  
-                    System.out.println();            
-                    break;
-
-                case MUL:
-                    System.out.println();
-                    break;
-
-                case SUB:
-                    System.out.println();
-                    break;
-
-                case DIV:
-                    System.out.println();
-                    break;
-
-                case POW:
-                    System.out.println();
-                    break;
-
-                case MOD:
-                    System.out.println();
-                    break;
-
-                case RETURN:
-                    System.out.println();
-                    break;
-
-                case STOP:
-                    System.out.println();
-                    break;
-
-                case JUMP:
-                    byteDisplayer(byteCode, i + 1, 2);
-                    System.out.println();
-                    i += 2;
-                    break;
-
-                case CJUMP:
-                    byteDisplayer(byteCode, i + 1, 2);
-                    System.out.println();
-                    i += 2;
-                    break;
-
-                case LOAD:
-                    byteDisplayer(byteCode, i + 1, 2);
-                    System.out.println();
-                    i += 2;
-                    break;
-
-                case STORE:
-                    byteDisplayer(byteCode, i + 1, 2);
-                    System.out.println();
-                    i += 2;
-                    break;
-
-                case DUP:
-                    byteDisplayer(byteCode, i + 1, 2);
-                    System.out.println();
-                    i += 2;
-                    break;
-
-                case SWAP:
-                    byteDisplayer(byteCode, i + 1, 2);
-                    System.out.println();
-                    i += 2;
-                    break;
-
-                case GT:
-                    System.out.println();
-                    break;
-
-                case LT:
-                    System.out.println();
-                    break;
-
-                case EQ:
-                    System.out.println();
-                    break;
-
-                case LHS:
-                    System.out.println();
-                    break;
-
-                case RHS:
-                    System.out.println();
-                    break;
-
-                case NEG:
-                    System.out.println();
-                    break;
-                
-                case AND:
-                    System.out.println();
-                    break;
-
-                case OR:
-                    System.out.println();
-                    break;
-
-                case XOR:
+                default:
                     System.out.println();
                     break;
             }

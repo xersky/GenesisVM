@@ -24,7 +24,9 @@ public enum Instruction {
     NEG(0x15),
     AND(0x16),
     OR(0x17),
-    XOR(0x18);
+    XOR(0x18),
+    JUMPDEST(0x19),
+    NOT(0x1A);
 
     public int byteValue;
 
@@ -108,6 +110,12 @@ public enum Instruction {
 
             case 0x18:
                 return XOR;
+            
+            case 0x19:
+                return JUMPDEST;
+            
+            case 0x1A:
+                return NOT;
         
             default:
             throw new ExceptionInInitializerError();
