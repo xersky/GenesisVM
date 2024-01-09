@@ -9,12 +9,17 @@ import java.util.function.Function;
 
 public class VirtualMachine {
 
-    public Optional<Integer> byteInterpreter(byte[] byteChunk) throws FileNotFoundException {
+    public Optional<Integer> byteInterpreter(byte[] byteChunk) {
 
         State stack = new State();
         byte[] memory = stack.getMemory();
         String databaseFilename = "Database.json";
-        String databaseJson = Utils.readFromFile(databaseFilename);
+        String databaseJson = new String();
+        try {
+            databaseJson = Utils.readFromFile(databaseFilename);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         
         for(int pc = 0; pc < byteChunk.length; pc++) {
 
