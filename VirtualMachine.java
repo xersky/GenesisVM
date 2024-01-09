@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,11 +9,13 @@ import java.util.function.Function;
 
 public class VirtualMachine {
 
-    public Optional<Integer> byteInterpreter(byte[] byteChunk) {
+    public Optional<Integer> byteInterpreter(byte[] byteChunk) throws FileNotFoundException {
 
         State stack = new State();
         byte[] memory = stack.getMemory();
-
+        String databaseFilename = "Database.json";
+        String databaseJson = Utils.readFromFile(databaseFilename);
+        
         for(int pc = 0; pc < byteChunk.length; pc++) {
 
             Instruction opCode = Instruction.fromInt(byteChunk[pc]);
@@ -116,6 +119,19 @@ public class VirtualMachine {
                         stack.getStack().push(itemToSwap);
                         break;
 
+                    case EXEC:
+                        Integer byteCodeHash = byteChunkMerger(byteChunk, pc + 1, 4);
+                        System.out.println(byteCodeHash);
+                        Map<String,String> mapOfHashes = Utils.jsonParser(databaseJson).get(0);
+                        String byteCode = mapOfHashes.get(String.valueOf(byteCodeHash));
+                        byte[] byteArray = Utils.hexStringParser(byteCode);
+                        Optional<Integer> byteExecuted = byteInterpreter(byteArray);
+
+                        byteExecuted.ifPresent(v -> stack.getStack().push(v));
+
+                        pc += 4;
+                        break;
+
                     case GT:
                         calc(stack, (args) -> args[0] > args[1] ? 1 : 0);
                         break;
@@ -143,10 +159,6 @@ public class VirtualMachine {
                     case NEG:
                         Integer argToNeg = stack.getStack().pop();
                         stack.getStack().push(~argToNeg);
-                        /* byte[] byteToNeg = ByteBuffer.allocate(4).putInt(argToNeg).array();
-                        byte[] negdByte = new byte[4];
-                        for(int j = 3, k = 0; j >= 0; negdByte[k++] = byteToNeg[j--]);
-                        stack.getStack().push(ByteBuffer.wrap(negdByte).getInt()); */
                         break;
                     
                     case AND:
@@ -179,12 +191,6 @@ public class VirtualMachine {
         ByteBuffer arg = ByteBuffer.wrap(byteChunk, index, numberOfBytes);
         return numberOfBytes == 2 ? arg.getShort() : arg.getInt();
     }
-/* 
-    public String[] byteToStringFiller(String[] mnemonics, byte[] byteCode, int indexOfMnemonics, int indexOfByteCode, int range) {
-        for(int i = indexOfByteCode; i < indexOfByteCode + range; mnemonics[indexOfMnemonics++] = Byte.toString(byteCode[i++]));
-        return mnemonics;
-    } */
-    
 
     public List<String> byteToMnemonicsArray(byte[] byteCode) {
 
@@ -284,33 +290,33 @@ public class VirtualMachine {
         return byteCode;
     }
 
-        public String regionMnemonicsToMnemonics(String regionMnemonics) {
-            String[] mnemonicsArray = regionMnemonics.split(" ");
-            StringBuilder mnemonics = new StringBuilder();
-            Map<String,Integer> regions = new HashMap<String,Integer>();
-            int appenderCounter = 0;
+    public String regionMnemonicsToMnemonics(String regionMnemonics) {
+        String[] mnemonicsArray = regionMnemonics.split(" ");
+        StringBuilder mnemonics = new StringBuilder();
+        Map<String,Integer> regions = new HashMap<String,Integer>();
+        int appenderCounter = 0;
 
-            for(int i = 0; i < mnemonicsArray.length; i++) {
-                try { 
-                    mnemonics.append("\n" + Instruction.valueOf(mnemonicsArray[i].toUpperCase()));
-                } catch (Exception e) {
-                    if (mnemonicsArray[i].endsWith(":")) {
-                        regions.put(mnemonicsArray[i], appenderCounter);
-                        mnemonics.append("\nJUMPDEST");
-                    } else if(mnemonicsArray[i].equals("GOTO")){
-                        mnemonics.append("\n" + Instruction.PUSH);
-                        byte[] immediants = ByteBuffer.allocate(4).putInt(regions.get(mnemonicsArray[++i] + ":")).array();
-                        for (byte immediant: immediants) {
-                            mnemonics.append(" " + String.format("%02X", immediant));
-                        }
-                        mnemonics.append("\n" + Instruction.JUMP);
-                    } else mnemonics.append(" " + mnemonicsArray[i]);
+        for(int i = 0; i < mnemonicsArray.length; i++) {
+            try { 
+                mnemonics.append("\n" + Instruction.valueOf(mnemonicsArray[i].toUpperCase()));
+            } catch (Exception e) {
+                if (mnemonicsArray[i].endsWith(":")) {
+                    regions.put(mnemonicsArray[i], appenderCounter);
+                    mnemonics.append("\nJUMPDEST");
+                } else if(mnemonicsArray[i].equals("GOTO")){
+                    mnemonics.append("\n" + Instruction.PUSH);
+                    byte[] immediants = ByteBuffer.allocate(4).putInt(regions.get(mnemonicsArray[++i] + ":")).array();
+                    for (byte immediant: immediants) {
+                        mnemonics.append(" " + String.format("%02X", immediant));
+                    }
+                    mnemonics.append("\n" + Instruction.JUMP);
+                } else mnemonics.append(" " + mnemonicsArray[i]);
 
-                } 
-                appenderCounter++;
-            }    
+            } 
+            appenderCounter++;
+        }    
 
-            return mnemonics.toString();
-        }
+        return mnemonics.toString();
+    }
     
 }
