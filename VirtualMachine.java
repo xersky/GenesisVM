@@ -1,4 +1,5 @@
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,10 +14,16 @@ public class VirtualMachine {
 
         State stack = new State();
         byte[] memory = stack.getMemory();
+
+        String stateFilename = "State.json";
         String databaseFilename = "Database.json";
+        String stateJson = new String();
         String databaseJson = new String();
+        StringBuffer newStateJson = new StringBuffer();
         try {
             databaseJson = Utils.readFromFile(databaseFilename);
+            stateJson = Utils.readFromFile(stateFilename);
+            newStateJson.append(stateJson);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -108,6 +115,38 @@ public class VirtualMachine {
 
                         break;
 
+                    case SLOAD:
+                        Integer keyToLoad = stack.getStack().pop();
+                        break;
+
+                    case SSTORE:
+                        Integer keyToStore = stack.getStack().pop();
+                        Integer valueToStore = stack.getStack().pop();
+
+                        int indexAsRef = newStateJson.lastIndexOf("\"", newStateJson.length());
+                        /* if(indexAsRef == -1) {
+                            indexAsRef = stateJson.lastIndexOf("{", 0);
+                            stateJson.append("\"" + keyToStore + "\" : " + valueToStore + "\"", indexAsRef + 1, keyToStore.toString().length() + valueToStore.toString().length() + 7);
+                        } else if(stateJson.lastIndexOf(",", indexAsRef) == -1) {
+                            stateJson.append(",\"" + keyToStore + "\" : " + valueToStore + "\"", indexAsRef + 1, keyToStore.toString().length() + valueToStore.toString().length() + 7);
+                        } else stateJson.append(",\"" + keyToStore + "\" : " + valueToStore + "\"", indexAsRef + 1, keyToStore.toString().length() + valueToStore.toString().length() + 7); */
+
+                        if(indexAsRef != -1) newStateJson.insert(++indexAsRef, ",");
+                        else indexAsRef = newStateJson.indexOf("{");
+
+                        newStateJson.insert(++indexAsRef, "\"" + keyToStore + "\":\"" + valueToStore + "\"");
+
+                        try {
+                            PrintWriter out = new PrintWriter(stateFilename); 
+                            out.println(newStateJson.toString());
+                            System.out.println(newStateJson);
+                            out.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        break;
+                    
                     case DUP:
                         Integer indexToDup = stack.getStack().pop();
                         Integer itemToDup = stack.getStack().elementAt(stack.getStack().size() - 1 - indexToDup);

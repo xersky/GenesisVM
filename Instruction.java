@@ -27,7 +27,9 @@ public enum Instruction {
     XOR(0x18),
     JUMPDEST(0x19),
     NOT(0x1A),
-    EXEC(0x1B);
+    EXEC(0x1B),
+    SLOAD(0x1C),
+    SSTORE(0x1D);
 
     public int byteValue;
 
@@ -120,6 +122,12 @@ public enum Instruction {
 
             case 0x1B:
                 return EXEC;
+            
+            case 0x1C:
+                return SLOAD;
+
+            case 0x1D:
+                return SSTORE;
         
             default:
             throw new ExceptionInInitializerError();
