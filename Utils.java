@@ -32,14 +32,16 @@ public class Utils {
 
     public static String jsonSerializer(Map<String,String> keyValueMap) {
         StringBuffer jsonBuffer = new StringBuffer();
+        Iterator<Map.Entry<String, String>> iterator = keyValueMap.entrySet().iterator();
 
         jsonBuffer.append("[{");
 
-        keyValueMap.forEach((k, v) -> {
-            jsonBuffer.append("\"" + k + "\":\"" + v + "\"");
-            jsonBuffer.append(",");
-        });
-            
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> entry = iterator.next();
+            jsonBuffer.append("\"" + entry.getKey() + "\":\"" + entry.getValue() + "\"");
+            if(iterator.hasNext()) jsonBuffer.append(",");
+        }
+
         jsonBuffer.append("}]");
 
         return jsonBuffer.toString();
@@ -52,6 +54,8 @@ public class Utils {
         int rightKeyPointer;
         int leftValuePointer;
         int rightValuePointer;
+        
+        if (json.isEmpty()) return jsonContent;
         
         while (index >= 0 && json.charAt(index) != ']') {
             Map<String,String> keyValueMap = new HashMap<String,String>();
