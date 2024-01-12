@@ -2,9 +2,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
 
 public class Utils {
 
@@ -27,6 +29,21 @@ public class Utils {
 
         return fileContent.toString();
     }
+
+    public static String jsonSerializer(Map<String,String> keyValueMap) {
+        StringBuffer jsonBuffer = new StringBuffer();
+
+        jsonBuffer.append("[{");
+
+        keyValueMap.forEach((k, v) -> {
+            jsonBuffer.append("\"" + k + "\":\"" + v + "\"");
+            jsonBuffer.append(",");
+        });
+            
+        jsonBuffer.append("}]");
+
+        return jsonBuffer.toString();
+    } 
 
     public static List<Map<String,String>> jsonParser(String json) {
         List<Map<String,String>> jsonContent = new ArrayList<Map<String,String>>();
@@ -59,7 +76,7 @@ public class Utils {
                         break;
                     };
                 }
-                jsonContent.add(keyValueMap);
+                if(keyValueMap.size() != 0) jsonContent.add(keyValueMap);
             } else {
 
                 break;
