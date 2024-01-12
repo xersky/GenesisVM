@@ -19,11 +19,9 @@ public class VirtualMachine {
         String databaseFilename = "Database.json";
         String stateJson = new String();
         String databaseJson = new String();
-        StringBuffer newStateJson = new StringBuffer();
         try {
             databaseJson = Utils.readFromFile(databaseFilename);
             stateJson = Utils.readFromFile(stateFilename);
-            newStateJson.append(stateJson);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -123,23 +121,17 @@ public class VirtualMachine {
                         Integer keyToStore = stack.getStack().pop();
                         Integer valueToStore = stack.getStack().pop();
 
-                        int indexAsRef = newStateJson.lastIndexOf("\"", newStateJson.length());
-                        /* if(indexAsRef == -1) {
-                            indexAsRef = stateJson.lastIndexOf("{", 0);
-                            stateJson.append("\"" + keyToStore + "\" : " + valueToStore + "\"", indexAsRef + 1, keyToStore.toString().length() + valueToStore.toString().length() + 7);
-                        } else if(stateJson.lastIndexOf(",", indexAsRef) == -1) {
-                            stateJson.append(",\"" + keyToStore + "\" : " + valueToStore + "\"", indexAsRef + 1, keyToStore.toString().length() + valueToStore.toString().length() + 7);
-                        } else stateJson.append(",\"" + keyToStore + "\" : " + valueToStore + "\"", indexAsRef + 1, keyToStore.toString().length() + valueToStore.toString().length() + 7); */
+                        List<Map<String, String>> mapList = Utils.jsonParser(stateJson);
+                        Map<String, String> keyValueDict = new HashMap<String, String>();
 
-                        if(indexAsRef != -1) newStateJson.insert(++indexAsRef, ",");
-                        else indexAsRef = newStateJson.indexOf("{");
+                        mapList.forEach(t -> keyValueDict.putAll(t));
+                        keyValueDict.put(keyToStore.toString(), valueToStore.toString());
 
-                        newStateJson.insert(++indexAsRef, "\"" + keyToStore + "\":\"" + valueToStore + "\"");
+                        String newStateJson = Utils.jsonSerializer(keyValueDict);
 
                         try {
                             PrintWriter out = new PrintWriter(stateFilename); 
                             out.println(newStateJson.toString());
-                            System.out.println(newStateJson);
                             out.close();
                         } catch (Exception e) {
                             e.printStackTrace();
