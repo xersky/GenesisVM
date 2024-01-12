@@ -1,4 +1,3 @@
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -10,7 +9,7 @@ import java.util.function.Function;
 
 public class VirtualMachine {
 
-    public Optional<Integer> byteInterpreter(byte[] byteChunk) {
+    public Optional<Integer> byteInterpreter(byte[] byteChunk) throws Exception {
 
         State stack = new State();
         byte[] memory = stack.getMemory();
@@ -19,12 +18,13 @@ public class VirtualMachine {
         String databaseFilename = "Database.json";
         String stateJson = new String();
         String databaseJson = new String();
-        try {
-            databaseJson = Utils.readFromFile(databaseFilename);
-            stateJson = Utils.readFromFile(stateFilename);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        
+        databaseJson = Utils.readFromFile(databaseFilename);
+        stateJson = Utils.readFromFile(stateFilename);
+
+        List<Map<String, String>> mapList = Utils.jsonParser(stateJson);
+        Map<String, String> keyValueDict = mapList.isEmpty() ? new HashMap<String, String>() : mapList.get(0);
+
         
         for(int pc = 0; pc < byteChunk.length; pc++) {
 
@@ -115,16 +115,16 @@ public class VirtualMachine {
 
                     case SLOAD:
                         Integer keyToLoad = stack.getStack().pop();
+
+                        if(keyValueDict.containsKey(keyToLoad.toString())) stack.getStack().push(Integer.parseInt(keyValueDict.get(keyToLoad.toString())));
+                        else throw new Exception("Key not found");
+
                         break;
 
                     case SSTORE:
-                        Integer keyToStore = stack.getStack().pop();
                         Integer valueToStore = stack.getStack().pop();
-
-                        List<Map<String, String>> mapList = Utils.jsonParser(stateJson);
-                        Map<String, String> keyValueDict = new HashMap<String, String>();
-
-                        mapList.forEach(t -> keyValueDict.putAll(t));
+                        Integer keyToStore = stack.getStack().pop();
+                    
                         keyValueDict.put(keyToStore.toString(), valueToStore.toString());
 
                         String newStateJson = Utils.jsonSerializer(keyValueDict);
