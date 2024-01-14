@@ -157,7 +157,6 @@ public class VirtualMachine {
 
                     case EXEC:
                         Integer byteCodeHash = byteChunkMerger(byteChunk, pc + 1, 4);
-                        System.out.println(byteCodeHash);
                         Map<String,String> mapOfHashes = Utils.jsonParser(databaseJson).get(0);
                         String byteCode = mapOfHashes.get(String.valueOf(byteCodeHash));
                         byte[] byteArray = Utils.hexStringParser(byteCode);
