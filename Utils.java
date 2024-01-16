@@ -11,6 +11,7 @@ import java.util.Scanner;
 public class Utils {
 
     public static byte[] hexStringParser(String hexString) {
+        if(hexString == null || hexString.isEmpty()) return null;
         String byteCode = hexString.substring(hexString.indexOf("x") + 1, hexString.length());
         byte[] byteArray = new byte[byteCode.length() / 2];
 
