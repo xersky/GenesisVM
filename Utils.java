@@ -35,7 +35,7 @@ public class Utils {
         StringBuffer jsonBuffer = new StringBuffer();
         Iterator<Map.Entry<String, String>> iterator = keyValueMap.entrySet().iterator();
 
-        jsonBuffer.append("[{");
+        jsonBuffer.append("{");
 
         while (iterator.hasNext()) {
             Map.Entry<String, String> entry = iterator.next();
@@ -43,10 +43,27 @@ public class Utils {
             if(iterator.hasNext()) jsonBuffer.append(",");
         }
 
-        jsonBuffer.append("}]");
+        jsonBuffer.append("}");
 
         return jsonBuffer.toString();
     } 
+
+    public static String jsonArraySerializer(List<Map<String,String>> listOfMap) {
+        StringBuffer jsonBuffer = new StringBuffer();
+
+        jsonBuffer.append("[");
+
+        if(listOfMap.isEmpty()) return null;
+
+        for(int i = 0; i < listOfMap.size(); i++) {
+            jsonBuffer.append(jsonSerializer(listOfMap.get(i)));
+            if(i != listOfMap.size() - 1) jsonBuffer.append(",");
+        }
+        jsonBuffer.append("]");
+        
+        return jsonBuffer.toString();
+    }
+
 
     public static List<Map<String,String>> jsonParser(String json) {
         List<Map<String,String>> jsonContent = new ArrayList<Map<String,String>>();
