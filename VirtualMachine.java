@@ -22,7 +22,7 @@ public class VirtualMachine {
         databaseJson = Utils.readFromFile(databaseFilename);
         stateJson = Utils.readFromFile(stateFilename);
 
-        List<Map<String, String>> mapList = Utils.jsonParser(stateJson);
+        List<Map<String, String>> mapList = Utils.jsonArrayParser(stateJson);
         Map<String, String> keyValueDict = mapList.isEmpty() ? new HashMap<String, String>() : mapList.get(0);
 
         
@@ -157,7 +157,7 @@ public class VirtualMachine {
 
                     case EXEC:
                         Integer byteCodeHash = byteChunkMerger(byteChunk, pc + 1, 4);
-                        Map<String,String> mapOfHashes = Utils.jsonParser(databaseJson).get(0);
+                        Map<String,String> mapOfHashes = Utils.jsonParser(databaseJson);
                         String byteCode = mapOfHashes.get(String.valueOf(byteCodeHash));
                         byte[] byteArray = Utils.hexStringParser(byteCode);
                         Optional<Integer> byteExecuted = byteInterpreter(byteArray);
