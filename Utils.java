@@ -65,47 +65,54 @@ public class Utils {
     }
 
 
-    public static List<Map<String,String>> jsonParser(String json) {
+    public static List<Map<String,String>> jsonArrayParser(String json) {
         List<Map<String,String>> jsonContent = new ArrayList<Map<String,String>>();
+        
+        if(json.isEmpty()) return jsonContent;
+        
+        int index = 0;
+        int endIndex = 0;
+
+        while((index = json.indexOf("{", index)) != -1) {   
+            endIndex = json.indexOf("}", index);
+            jsonContent.add(jsonParser(json.substring(index, ++endIndex)));
+            index = endIndex;
+        }
+
+        return jsonContent;
+    }
+
+    public static Map<String,String> jsonParser(String json) {
+        Map<String,String> keyValueMap = new HashMap<String,String>();
+
+        if(json.isEmpty()) return keyValueMap;
+
         int index = 0;
         int leftKeyPointer;
         int rightKeyPointer;
         int leftValuePointer;
         int rightValuePointer;
-        
-        if (json.isEmpty()) return jsonContent;
-        
-        while (index >= 0 && json.charAt(index) != ']') {
-            Map<String,String> keyValueMap = new HashMap<String,String>();
-            
-            index = json.indexOf('{', index);
-            if(index != -1) {
-                while(true) {
-                    index = json.indexOf('"', index);
-                    if(index == -1) break;
-                    leftKeyPointer = index + 1;
-                    rightKeyPointer = json.indexOf('"', ++index);
-                    index = json.indexOf(':', index);
 
-                    index = json.indexOf('"', index);
-                    leftValuePointer = index + 1;
-                    rightValuePointer = json.indexOf('"', ++index);
-                    index = rightValuePointer;
+        index = json.indexOf('{', index);
+        if(index != -1) {
+            while(true) {
+                index = json.indexOf('"', index);
+                if(index == -1) break;
+                leftKeyPointer = index + 1;
+                rightKeyPointer = json.indexOf('"', ++index);
+                index = json.indexOf(':', index);
 
-                    keyValueMap.put(json.substring(leftKeyPointer,rightKeyPointer), json.substring(leftValuePointer,rightValuePointer));
-                    index++;
-                    if(json.charAt(index) == '}') {
-                        break;
-                    };
-                }
-                if(keyValueMap.size() != 0) jsonContent.add(keyValueMap);
-            } else {
+                index = json.indexOf('"', index);
+                leftValuePointer = index + 1;
+                rightValuePointer = json.indexOf('"', ++index);
+                index = rightValuePointer;
 
-                break;
+                keyValueMap.put(json.substring(leftKeyPointer,rightKeyPointer), json.substring(leftValuePointer,rightValuePointer));
+                index++;
+                if(json.charAt(index) == '}') break;
             }
-            
         }
 
-        return jsonContent;
+        return keyValueMap;
     }
 }
