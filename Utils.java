@@ -1,4 +1,4 @@
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,14 +20,20 @@ public class Utils {
         return byteArray;
     }
 
-    public static String readFromFile(String filename) throws FileNotFoundException {
-        Scanner sc = new Scanner(new FileReader(filename));
+    public static String readFromFile(String filename){
         StringBuilder fileContent = new StringBuilder();
-
-        while (sc.hasNext()) {
-            fileContent.append(sc.next());
+        try {
+            File file = new File(filename);
+            if(file.exists()){
+                Scanner sc = new Scanner(new FileReader(filename));
+                while (sc.hasNext()) {
+                    fileContent.append(sc.next());
+                }
+            } else new File(filename).createNewFile();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
         return fileContent.toString();
     }
 
