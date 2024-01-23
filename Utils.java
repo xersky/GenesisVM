@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,12 +30,27 @@ public class Utils {
                 while (sc.hasNext()) {
                     fileContent.append(sc.next());
                 }
-            } else new File(filename).createNewFile();
+            } else file.createNewFile();
             
         } catch (Exception e) {
             e.printStackTrace();
         }
         return fileContent.toString();
+    }
+
+    public static void updateFile(String filename, String newFileContent) {
+        try {
+            File file = new File(filename);
+
+            if(!file.exists()) file.createNewFile();
+
+            PrintWriter out = new PrintWriter(file);
+            out.println(newFileContent);
+            out.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static String jsonSerializer(Map<String,String> keyValueMap) {
