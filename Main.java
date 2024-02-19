@@ -1,10 +1,10 @@
-import java.util.List;
+import java.nio.ByteBuffer;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        VirtualMachine vm = new VirtualMachine();
+        //VirtualMachine vm = new VirtualMachine();
 
-        byte[] summationOfTwentyThreeByteArray = {
+        /* byte[] summationOfTwentyThreeByteArray = {
             //push 23
             00,00,00,00,0x17,
             //push 1
@@ -70,7 +70,7 @@ public class Main {
             //return
             0x08 
 
-        };
+        }; */
         
        /*  String mnemonics = "PUSH 00 00 00 17 PUSH 00 00 00 01 STORE 00 01 STORE 00 00 PUSH 00 00 00 00 PUSH 00 00 00 01 STORE 00 03 STORE 00 02 LOAD 00 02 LOAD 00 03 ADD STORE 00 02 LOAD 00 03 PUSH 00 00 00 01 ADD STORE 00 03 LOAD 00 03 LOAD 00 00 EQ CJUMP FF E0 LOAD 00 02 LOAD 00 00 ADD RETURN";
 
@@ -86,11 +86,27 @@ public class Main {
 
 
 
-        String mnemonics = "PUSH 00 00 00 17 PUSH 00 00 00 01 PUSH 00 00 00 01 STORE PUSH 00 00 00 0 STORE fallback: PUSH 00 00 00 00 PUSH 00 00 00 01 PUSH 00 00 00 03 STORE PUSH 00 00 00 02 STORE JUMPDEST PUSH 00 00 00 02 LOAD PUSH 00 00 00 03 LOAD ADD PUSH 00 00 00 02 STORE PUSH 00 00 00 03 LOAD PUSH 00 00 00 01 ADD PUSH 00 00 00 03 STORE PUSH 00 00 00 03 LOAD PUSH 00 00 00 00 LOAD EQ NOT PUSH 00 00 00 2C CJUMP PUSH 00 00 00 02 LOAD PUSH 00 00 00 00 LOAD GOTO fallback ADD RETURN";
+/*         String mnemonics = "PUSH 00 00 00 17 PUSH 00 00 00 01 PUSH 00 00 00 01 STORE PUSH 00 00 00 0 STORE fallback: PUSH 00 00 00 00 PUSH 00 00 00 01 PUSH 00 00 00 03 STORE PUSH 00 00 00 02 STORE JUMPDEST PUSH 00 00 00 02 LOAD PUSH 00 00 00 03 LOAD ADD PUSH 00 00 00 02 STORE PUSH 00 00 00 03 LOAD PUSH 00 00 00 01 ADD PUSH 00 00 00 03 STORE PUSH 00 00 00 03 LOAD PUSH 00 00 00 00 LOAD EQ NOT PUSH 00 00 00 2C CJUMP PUSH 00 00 00 02 LOAD PUSH 00 00 00 00 LOAD GOTO fallback ADD RETURN";
 
         //System.out.println(vm.regionMnemonicsToMnemonics(mnemonics));
 
         String ifMnemonics = "PUSH 00 00 00 01 PUSH 00 00 00 00 STORE PUSH 00 00 00 00 LOAD PUSH 00 00 00 00 EQ PUSH 00 00 00 28 CJUMP PUSH 00 00 00 17 PUSH 00 00 00 2E JUMP JUMPDEST PUSH 00 00 00 45 JUMPDEST RETURN"; //return 69 if 2 last args of stack are equal and return 23 if not
         System.out.println(vm.byteInterpreter(vm.mnemonicsToByteCode(ifMnemonics)));
+*/
+        VirtualMachine vm = new VirtualMachine(); 
+
+        // Specify the bytecode hash from the database
+        int bytecodeHashInt = 23; // We will try to execute the bytecode with the 23 key hash value
+
+        byte[] bytecodeHash = ByteBuffer.allocate(4).putInt(bytecodeHashInt).array(); // Converting from int to an array of bytes
+
+        // Creating a bytecode snippet from mnemonics using the EXEC instruction then converting it to bytecode
+        String mnemonics = "EXEC " +  vm.byteToString(bytecodeHash, 0, 4).trim() + " RETURN";
+        System.out.println("Bytecode representation to execute: " + mnemonics);
+        
+        byte[] bytecodeFromDatabase = vm.mnemonicsToByteCode(mnemonics);
+
+        // Executing the bytecode from the database and printing its result
+        System.out.println(vm.byteInterpreter(bytecodeFromDatabase));
     }
 }
