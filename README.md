@@ -117,9 +117,36 @@ The virtual machine supports operations like loading and storing values in memor
 Jump and conditional jump instructions allow for control flow manipulation with a jump destination instruction for safety.
 
 **State Persistence**: 
-The state of the virtual machine, including memory, can be persisted to JSON files (State.json and Database.json).
+The state of the virtual machine, including memory, can be persisted to JSON files (`State.json`).
 
+**Dynamic Code Execution**:
+Utilize the `EXEC` instruction to execute bytecode identified by a hash stored in the `Database.json` file.
 
+`Database.json`:
+```json
+{"23":"0x000000000100000000020208","69":"0x000000000100000000020309","1546833":"0x09"}
+```
+We will try to execute the bytecode with the `23` key hash value (Pushing 1 and 2 to the stack then adding them and returning the reesult)
+```java
+    VirtualMachine vm = new VirtualMachine();
+
+    // Specify the bytecode hash from the database
+    int bytecodeHashInt = 23; // We will try to execute the bytecode with the 23 key hash value
+
+    byte[] bytecodeHash = ByteBuffer.allocate(4).putInt(bytecodeHashInt).array(); // Converting from int to an array of bytes
+
+    // Creating a bytecode snippet from mnemonics using the EXEC instruction then converting it to bytecode
+    String mnemonics = "EXEC " +  vm.byteToString(bytecodeHash, 0, 4).trim() + " RETURN";
+    System.out.println("Bytecode representation to execute: " + mnemonics);
+    
+    byte[] bytecodeFromDatabase = vm.mnemonicsToByteCode(mnemonics);
+
+    // Executing the bytecode from the database and printing its result
+    System.out.println(vm.byteInterpreter(bytecodeFromDatabase)); // should be 3
+```
+The result:
+
+![exec test](exec.png)
 
 ## Code Structure
 The project is organized into three main classes:
